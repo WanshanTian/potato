@@ -38,7 +38,7 @@ var initCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		projectPath, err := initializeProject(args)
 		cobra.CheckErr(err)
-		fmt.Printf("Your Cobra application is ready at\n%s\n", projectPath)
+		fmt.Printf("Your Potato Automated Testing Project is ready at\n%s\n", projectPath)
 	},
 }
 
@@ -66,6 +66,8 @@ func initializeProject(args []string) (string, error) {
 		Viper:        viper.GetBool("useViper"),
 		ProjectName:  path.Base(pkgName),
 	}
-
+	if err := project.Create(); err != nil {
+		return "", err
+	}
 	return project.AbsolutePath, nil
 }
