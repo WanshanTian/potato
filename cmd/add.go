@@ -56,7 +56,7 @@ var addSuite = &cobra.Command{
 			},
 		}
 		cobra.CheckErr(suite.Create())
-		fmt.Printf("%s created at %s\n", suite.SuiteName, suite.AbsolutePath)
+		fmt.Printf("%s created at %s\n", suite.SuiteName, suite.Dst)
 	},
 }
 

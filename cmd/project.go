@@ -22,6 +22,7 @@ type Project struct {
 type Testsuite struct {
 	SuiteName            string
 	ToLowerSuiteBaseName string //path.Base(SuiteName)
+	Dst                  string
 	*Project
 }
 
@@ -75,9 +76,12 @@ func (c *Testsuite) Create() error {
 	if err != nil {
 		return err
 	}
-	var suiteFile *os.File
+	var (
+		suiteFile *os.File
+		dst       string
+	)
 	if strings.Contains(pwd, "testsuites") {
-		dst := path.Join(pwd, c.SuiteName)
+		dst = path.Join(pwd, c.SuiteName)
 		if !strings.Contains(dst, "testsuites") {
 			fmt.Printf("The absolute path is %s, please enter the correct relative path of testsuite", dst)
 			os.Exit(1)
@@ -91,10 +95,10 @@ func (c *Testsuite) Create() error {
 		}
 	} else {
 		if _, err := os.Stat(path.Join(c.AbsolutePath, "testsuites")); os.IsNotExist(err) {
-			fmt.Println(err.Error() + "\nPlease add testsuites under the path of potato project")
+			fmt.Println(err.Error() + "\nPlease add a testsuite under the rootpath of potato project or the path of testsuites")
 			os.Exit(1)
 		}
-		dst := path.Join(c.AbsolutePath, "testsuites", c.SuiteName)
+		dst = path.Join(c.AbsolutePath, "testsuites", c.SuiteName)
 		if !strings.Contains(dst, "testsuites") {
 			fmt.Printf("The absolute path is %s, please enter the correct relative path of testsuite", dst)
 			os.Exit(1)
@@ -108,7 +112,7 @@ func (c *Testsuite) Create() error {
 		}
 	}
 	defer suiteFile.Close()
-
+	c.Dst = dst
 	SuiteTemplate := template.Must(template.New("suite").Parse(string(tpl.AddSuiteTemplate())))
 	err = SuiteTemplate.Execute(suiteFile, c)
 	if err != nil {
