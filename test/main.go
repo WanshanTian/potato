@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"path"
+
+	"github.com/txy2023/potato/register"
 )
 
 func main() {
-	path1, _ := os.Getwd()
-	fmt.Println(path1)
-	fmt.Println(path.Base(path1))
-	fmt.Println(path.Join("/test/1/2", "../3"))
+	a := register.Registe(&register.TestSuite{})
+	b := register.Registe(&register.TestSuite{})
+	c := register.Registe(&register.TestSuite{})
+	fmt.Println(a, b, c)
 }
