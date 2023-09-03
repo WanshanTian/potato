@@ -101,14 +101,11 @@ func (c *Testsuite) Create() error {
 		fmt.Printf("The absolute path is %s, please enter the correct relative path of testsuite", dst)
 		os.Exit(1)
 	}
-	if _, err := os.Stat(dst); os.IsNotExist(err) {
-		cobra.CheckErr(os.MkdirAll(dst, 0751))
-	}
 	c.Dst = dst
 	// acquire the module name
 	modFile := path.Join(strings.Split(dst, testsuites)[0], "go.mod")
 	if _, err := os.Stat(modFile); os.IsNotExist(err) {
-		fmt.Println("please go mod init [mod-name] manually")
+		fmt.Println("please go mod init [mod-name] manually first")
 		os.Exit(1)
 	}
 	goModBytes, err := ioutil.ReadFile(path.Join(modFile))
@@ -117,6 +114,10 @@ func (c *Testsuite) Create() error {
 	}
 	c.ModName = modfile.ModulePath(goModBytes)
 	c.ImportedPath = path.Join(c.ModName, testsuites, strings.Split(dst, testsuites)[1])
+	// create dst directory
+	if _, err := os.Stat(dst); os.IsNotExist(err) {
+		cobra.CheckErr(os.MkdirAll(dst, 0751))
+	}
 	// create suiteFile where you can add new testcase
 	suiteFilePath := path.Join(dst, fmt.Sprintf("%s.go", c.SuiteBaseName))
 	suiteFile, err = os.Create(suiteFilePath)
