@@ -39,9 +39,44 @@ func Execute(testcase, testsuite *string) {
 }
 
 func AddSuiteTemplate() []byte {
-	return []byte(`package {{ .ToLowerSuiteBaseName }}
+	return []byte(`package {{ .PackageName }}
 
+// Here you will define your specific testcase
+func (d *{{ .StructName }}) TestCase1() (err error) {
+	return 
+}
 
+`)
+}
 
+func SuiteInitTemplate() []byte {
+	return []byte(`package {{ .PackageName }}
+
+import (
+	"github.com/txy2023/potato/execute"
+)
+
+type {{ .StructName }} struct{}
+
+func (d *{{ .StructName }}) Execute() {
+	execute.Execute()
+}
+
+`)
+}
+
+func SuiteRegisteTemplate() []byte {
+	return []byte(`package execute
+
+import (
+	"{{ .ImportedPath }}"
+	
+	"github.com/txy2023/potato/register"
+	
+)
+
+func init() {
+	register.Registe(new({{ .PackageName }}.{{ .StructName }}))
+}
 `)
 }

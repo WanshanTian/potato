@@ -20,11 +20,19 @@ type Project struct {
 }
 
 type Testsuite struct {
-	SuiteName            string
-	ToLowerSuiteBaseName string //path.Base(SuiteName)
-	Dst                  string
+	SuiteName     string //相对路径名
+	SuiteBaseName string //path.Base(SuiteName)
+	Dst           string
+	PackageName   string //the packageName of testsuite
+	StructName    string
+	ImportedPath  string //execute包中导入该testsuite时的import路径
+
 	*Project
 }
+
+var (
+	testsuites = "testsuites"
+)
 
 func (p *Project) Create() error {
 	// check if AbsolutePath exists
@@ -72,44 +80,34 @@ func (p *Project) Create() error {
 }
 
 func (c *Testsuite) Create() error {
-	pwd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
 	var (
-		suiteFile *os.File
-		dst       string
+		suiteFile         *os.File
+		suiteInitFile     *os.File
+		suiteRegisterFile *os.File
+		dst               string
 	)
-	if strings.Contains(pwd, "testsuites") {
-		dst = path.Join(pwd, c.SuiteName)
-		if !strings.Contains(dst, "testsuites") {
-			fmt.Printf("The absolute path is %s, please enter the correct relative path of testsuite", dst)
-			os.Exit(1)
-		}
-		if _, err := os.Stat(dst); os.IsNotExist(err) {
-			cobra.CheckErr(os.MkdirAll(dst, 0751))
-		}
-		suiteFile, err = os.Create(path.Join(dst, c.ToLowerSuiteBaseName))
-		if err != nil {
-			return err
-		}
+	if strings.Contains(c.AbsolutePath, "testsuites") {
+		dst = path.Join(c.AbsolutePath, c.SuiteName)
 	} else {
 		if _, err := os.Stat(path.Join(c.AbsolutePath, "testsuites")); os.IsNotExist(err) {
 			fmt.Println(err.Error() + "\nPlease add a testsuite under the rootpath of potato project or the path of testsuites")
 			os.Exit(1)
 		}
 		dst = path.Join(c.AbsolutePath, "testsuites", c.SuiteName)
-		if !strings.Contains(dst, "testsuites") {
-			fmt.Printf("The absolute path is %s, please enter the correct relative path of testsuite", dst)
-			os.Exit(1)
-		}
-		if _, err := os.Stat(dst); os.IsNotExist(err) {
-			cobra.CheckErr(os.MkdirAll(dst, 0751))
-		}
-		suiteFile, err = os.Create(path.Join(dst, fmt.Sprintf("%s.go", c.ToLowerSuiteBaseName)))
-		if err != nil {
-			return err
-		}
+	}
+	c.ImportedPath = path.Join(c.PkgName, testsuites, strings.Split(dst, testsuites)[1])
+	if !strings.Contains(dst, "testsuites") {
+		fmt.Printf("The absolute path is %s, please enter the correct relative path of testsuite", dst)
+		os.Exit(1)
+	}
+	if _, err := os.Stat(dst); os.IsNotExist(err) {
+		cobra.CheckErr(os.MkdirAll(dst, 0751))
+	}
+	// create suiteFile where you can add new testcase
+	suiteFilePath := path.Join(dst, fmt.Sprintf("%s.go", c.SuiteBaseName))
+	suiteFile, err := os.Create(suiteFilePath)
+	if err != nil {
+		return err
 	}
 	defer suiteFile.Close()
 	c.Dst = dst
@@ -118,5 +116,25 @@ func (c *Testsuite) Create() error {
 	if err != nil {
 		return err
 	}
-	return nil
+	// create initFile which completes initialization work
+	suiteInitFile, err = os.Create(path.Join(dst, "init.go"))
+	if err != nil {
+		return err
+	}
+	defer suiteInitFile.Close()
+	SuiteInitTemplate := template.Must(template.New("init").Parse(string(tpl.SuiteInitTemplate())))
+	err = SuiteInitTemplate.Execute(suiteInitFile, c)
+	if err != nil {
+		return err
+	}
+	// create suiteRegisterFile
+	dir := path.Join(strings.Split(dst, "testsuites")[0], "execute")
+	suiteRegisterFile, err = os.Create(path.Join(dir, fmt.Sprintf("%sSuiteRegiste.go", c.SuiteBaseName)))
+	if err != nil {
+		return err
+	}
+	defer suiteRegisterFile.Close()
+	suiteRegisterFileTemplate := template.Must(template.New("registe").Parse(string(tpl.SuiteRegisteTemplate())))
+	err = suiteRegisterFileTemplate.Execute(suiteRegisterFile, c)
+	return err
 }

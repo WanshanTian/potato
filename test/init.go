@@ -1,21 +1,10 @@
-package test
+package main
 
 import (
 	"fmt"
-
-	"github.com/txy2023/potato/register"
+	"path"
 )
 
-type Dvs struct{}
-
-func (d *Dvs) Execute() {
-	fmt.Println("1")
-}
-
-func init() {
-	register.Registe(new(Dvs))
-}
-
-func (*Dvs) VM() {
-	fmt.Println(1)
+func main() {
+	fmt.Println(path.Join("test", "\\hello"))
 }

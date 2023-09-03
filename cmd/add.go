@@ -23,11 +23,13 @@ import (
 	"unicode"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // addCmd represents the add command
 var addSuite = &cobra.Command{
-	Use:     "add [testsuite name]",
+	Use:     "add [testsuite name] -p [testsuite package name]",
 	Aliases: []string{"testsuite, suite"},
 	Short:   "Add a testsuite to a Automated Testing Project",
 	Long: `Add (potato add) will create a new testsuite with the appropriate structure.
@@ -49,20 +51,21 @@ var addSuite = &cobra.Command{
 		}
 		suiteName := validateSuiteName(args[0])
 		suite := &Testsuite{
-			SuiteName:            suiteName,
-			ToLowerSuiteBaseName: strings.ToLower(path.Base(suiteName)),
+			SuiteName:     suiteName,
+			SuiteBaseName: path.Base(suiteName),
+			PackageName:   strings.ToLower(path.Base(suiteName)),
+			StructName:    cases.Title(language.English).String(strings.ToLower(path.Base(suiteName))) + "Suite",
 			Project: &Project{
 				AbsolutePath: wd,
 			},
 		}
 		cobra.CheckErr(suite.Create())
-		fmt.Printf("%s created at %s\n", suite.SuiteName, suite.Dst)
+		fmt.Printf("%s created at %s\n", suite.SuiteBaseName, suite.Dst)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(addSuite)
-
 }
 func validateSuiteName(source string) string {
 	origin := source
