@@ -18,13 +18,12 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var pkgName string
+var modName string
 
 // initCmd represents the init command
 var initCmd = &cobra.Command{
@@ -44,8 +43,8 @@ var initCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(initCmd)
-	initCmd.Flags().StringVar(&pkgName, "pkg-name", "", "fully qualified pkg name")
-	cobra.CheckErr(initCmd.MarkFlagRequired("pkg-name"))
+	initCmd.Flags().StringVarP(&modName, "mod-name", "m", "", "fully qualified pkg name")
+	cobra.CheckErr(initCmd.MarkFlagRequired("mod-name"))
 }
 
 func initializeProject(args []string) (string, error) {
@@ -62,9 +61,9 @@ func initializeProject(args []string) (string, error) {
 
 	project := &Project{
 		AbsolutePath: wd,
-		PkgName:      pkgName,
+		ModName:      modName,
 		Viper:        viper.GetBool("useViper"),
-		ProjectName:  path.Base(pkgName),
+		// ProjectName:  path.Base(modName),
 	}
 	if err := project.Create(); err != nil {
 		return "", err

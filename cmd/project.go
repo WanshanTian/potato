@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -9,14 +10,15 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/txy2023/potato/tpl"
+	"golang.org/x/mod/modfile"
 )
 
 // Project contains name and paths to projects.
 type Project struct {
-	PkgName      string
+	ModName      string
 	AbsolutePath string
 	Viper        bool
-	ProjectName  string
+	// ProjectName  string
 }
 
 type Testsuite struct {
@@ -42,7 +44,6 @@ func (p *Project) Create() error {
 			return err
 		}
 	}
-
 	// create main.go
 	mainFile, err := os.Create(fmt.Sprintf("%s/main.go", p.AbsolutePath))
 	if err != nil {
@@ -86,6 +87,7 @@ func (c *Testsuite) Create() error {
 		suiteRegisterFile *os.File
 		dst               string
 	)
+	// acquire dst
 	if strings.Contains(c.AbsolutePath, "testsuites") {
 		dst = path.Join(c.AbsolutePath, c.SuiteName)
 	} else {
@@ -95,7 +97,6 @@ func (c *Testsuite) Create() error {
 		}
 		dst = path.Join(c.AbsolutePath, "testsuites", c.SuiteName)
 	}
-	c.ImportedPath = path.Join(c.PkgName, testsuites, strings.Split(dst, testsuites)[1])
 	if !strings.Contains(dst, "testsuites") {
 		fmt.Printf("The absolute path is %s, please enter the correct relative path of testsuite", dst)
 		os.Exit(1)
@@ -103,14 +104,27 @@ func (c *Testsuite) Create() error {
 	if _, err := os.Stat(dst); os.IsNotExist(err) {
 		cobra.CheckErr(os.MkdirAll(dst, 0751))
 	}
+	c.Dst = dst
+	// acquire the module name
+	modFile := path.Join(strings.Split(dst, testsuites)[0], "go.mod")
+	if _, err := os.Stat(modFile); os.IsNotExist(err) {
+		fmt.Println("please go mod init [mod-name] manually")
+		os.Exit(1)
+	}
+	goModBytes, err := ioutil.ReadFile(path.Join(modFile))
+	if err != nil {
+		return err
+	}
+	c.ModName = modfile.ModulePath(goModBytes)
+	c.ImportedPath = path.Join(c.ModName, testsuites, strings.Split(dst, testsuites)[1])
 	// create suiteFile where you can add new testcase
 	suiteFilePath := path.Join(dst, fmt.Sprintf("%s.go", c.SuiteBaseName))
-	suiteFile, err := os.Create(suiteFilePath)
+	suiteFile, err = os.Create(suiteFilePath)
 	if err != nil {
 		return err
 	}
 	defer suiteFile.Close()
-	c.Dst = dst
+
 	SuiteTemplate := template.Must(template.New("suite").Parse(string(tpl.AddSuiteTemplate())))
 	err = SuiteTemplate.Execute(suiteFile, c)
 	if err != nil {

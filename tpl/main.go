@@ -4,7 +4,7 @@ func MainTemplate() []byte {
 	return []byte(`package main
 
 import (
-	"{{ .PkgName }}/execute"
+	"{{ .ModName }}/execute"
 	"flag"
 	"os"
 )
@@ -70,9 +70,8 @@ func SuiteRegisteTemplate() []byte {
 
 import (
 	"{{ .ImportedPath }}"
-	
+
 	"github.com/txy2023/potato/register"
-	
 )
 
 func init() {
