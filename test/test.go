@@ -3,16 +3,27 @@ package main
 import (
 	"fmt"
 
-	"golang.org/x/mod/modfile"
+	"github.com/txy2023/potato/execute"
 )
 
-func main() {
-	src := `
-	module github.com/you/hello
-	
-	require rsc.io/quote v1.5.2
-	`
+type Hello2Suite struct{}
 
-	mod := modfile.ModulePath([]byte(src))
-	fmt.Println(mod)
+func (d *Hello2Suite) Execute() {
+	execute.Execute(d)
+}
+func (d *Hello2Suite) Walk() error {
+	fmt.Println("hello walk")
+	return nil
+}
+func (d *Hello2Suite) Setup() error {
+	fmt.Println("begin")
+	return fmt.Errorf("errr")
+}
+func (d *Hello2Suite) Teardown(a int) error {
+	fmt.Println("end")
+	return nil
+}
+func main() {
+	a := new(Hello2Suite)
+	a.Execute()
 }
