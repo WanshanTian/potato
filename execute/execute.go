@@ -30,7 +30,7 @@ func GetMethodsImplementedByUser(suite register.TestSuite) (ret []reflect.Method
 }
 
 func IsExistTestcases() {
-	if TestCasesSpecified == nil {
+	if *TestCasesSpecified == "" {
 		return
 	}
 	reg := regexp.MustCompile(`(\w+,?)+`)
@@ -65,7 +65,7 @@ func IsExistTestcases() {
 }
 
 func IsExistTestSuites() {
-	if TestSuitesSpecified == nil {
+	if *TestSuitesSpecified == "" {
 		return
 	}
 	reg := regexp.MustCompile(`(\w+,?)+`)
@@ -94,7 +94,7 @@ func Execute(testsuite interface{}) {
 	funcElements := []reflect.Value{suiteValue}
 	//global variable TestCasesSpecified !=nil
 	var testCasesExec = []reflect.Method{}
-	if TestCasesSpecified != nil {
+	if *TestCasesSpecified == "" {
 		testcases := strings.Split(*TestCasesSpecified, ",")
 		tmp := make(map[string]reflect.Method)
 		for i := 0; i < suiteType.NumMethod(); i++ {
@@ -138,13 +138,6 @@ func Execute(testsuite interface{}) {
 	}
 	// testcase
 	if len(testCasesExec) == 0 {
-		// for i := 0; i < suiteType.NumMethod(); i++ {
-		// 	if suiteType.Method(i).Name == "Execute" || suiteType.Method(i).Name == "Setup" || suiteType.Method(i).Name == "Teardown" {
-		// 		continue
-		// 	}
-		// 	method := suiteType.Method(i)
-		// 	testCasesExec = append(testCasesExec, method)
-		// }
 		testCasesExec = GetMethodsImplementedByUser(testsuite.(register.TestSuite))
 	}
 	for _, method := range testCasesExec {

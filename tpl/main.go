@@ -28,21 +28,21 @@ var rootCmd = &cobra.Command{
 		`when flag testcase is specified, the testcase specified will be executed, so is flag testsuite
 if flag testcase or flag testsuite is not specified, all testcases will be executed` + "`" + `,
 	Run: func(cmd *cobra.Command, args []string) {
-		if TestCasesSpecified != nil {
+		if *TestCasesSpecified == "" {
 			execute.TestCasesSpecified = TestCasesSpecified
 			execute.IsExistTestcases()
 			for _, testsuite := range execute.TestSuitesExecForTestCasesSpecified {
 				testsuite.Execute()
 			}
 		}
-		if TestSuitesSpecified != nil {
+		if *TestSuitesSpecified == "" {
 			execute.TestSuitesSpecified = TestSuitesSpecified
 			execute.IsExistTestSuites()
 			for _, testsuite := range execute.TestSuitesExec {
 				testsuite.Execute()
 			}
 		} 
-		if TestCasesSpecified == nil && TestSuitesSpecified == nil {
+		if *TestCasesSpecified == "" && *TestSuitesSpecified == "" {
 			for _, testsuite := range register.Registered {
 				testsuite.Execute()
 			}
