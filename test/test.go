@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/txy2023/potato/execute"
+	"github.com/txy2023/potato/utils"
 )
 
 type Hello2Suite struct{}
@@ -24,6 +25,5 @@ func (d *Hello2Suite) Teardown(a int) error {
 	return nil
 }
 func main() {
-	a := new(Hello2Suite)
-	a.Execute()
+	fmt.Println(utils.GetTestSuiteName(&Hello2Suite{}))
 }

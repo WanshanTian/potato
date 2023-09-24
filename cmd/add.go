@@ -29,15 +29,12 @@ import (
 
 // addCmd represents the add command
 var addSuite = &cobra.Command{
-	Use:     "add [testsuite name] -p [testsuite package name]",
+	Use:     "add [the path of testsuite]",
 	Aliases: []string{"testsuite, suite"},
 	Short:   "Add a testsuite to a Automated Testing Project",
-	Long: `Add (potato add) will create a new testsuite with the appropriate structure.
-	
-	If you want your testsuite to be executed, pass in the testsuite name
-	with an initial uppercase letter.
-	
-	Example: potato add Network -> resulting in a new Network/network.go`,
+	Long: `Add (potato add) will create the directory specified by the path and then new a testsuite with the appropriate structure.
+
+	Example: potato add Network -> resulting in a new ./testsuite/Network/Network.go`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			cobra.CheckErr(fmt.Errorf("add needs a name for the testsuite"))

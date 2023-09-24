@@ -24,6 +24,7 @@ func Execute(testsuite interface{}) {
 			return
 		}
 		ret := method.Func.Call(funcElements)
+		// if the return of Setup !=nil, the testcases will be assumed to be failed
 		if ret[0].Interface() != nil {
 			log.Printf("testsuite %s Setup fail", suiteType.Elem().Name())
 			for i := 0; i < suiteType.NumMethod(); i++ {

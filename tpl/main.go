@@ -5,22 +5,10 @@ func MainTemplate() []byte {
 
 import (
 	"{{ .ModName }}/execute"
-	"flag"
-	"os"
 )
-
-var (
-	testcase  = flag.String("case", "", "specify the testcases to execute(separated by commas), such as(total:):")
-	testsuite = flag.String("suite", "", "specify the testsuites to execute(separated by commas), such as(total:):")
-)
-
-func init() {
-	flag.CommandLine.SetOutput(os.Stdout)
-	flag.Parse()
-}
 
 func main() {
-	execute.Execute(testcase, testsuite)
+	execute.Execute()
 }
 `)
 }
@@ -30,16 +18,45 @@ func ExecuteTemplate() []byte {
 
 import (
 	"fmt"
+
+	"github.com/spf13/cobra"
 )
 
-func Execute(testcase, testsuite *string) {
-	fmt.Println("executing")
+var rootCmd = &cobra.Command{
+	Use: "go run main.go OR ./main(the compiled name)",
+	Long: ` + "`" +
+		`when flag testcase is specified, the testcase specified will be executed, so is flag testsuite
+if flag testcase or flag testsuite is not specified, all testcases will be executed` + "`" + `,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("run")
+	},
+}
+
+func Execute() {
+	cobra.CheckErr(rootCmd.Execute())
+}
+
+func init() {
+	rootCmd.Flags().StringP("testcase", "c", "", "specify the testcases to execute(separated by commas), such as(total:):")
+	rootCmd.Flags().StringP("testsuite", "s", "", "specify the testsuites to execute(separated by commas), such as(total:):")
 }
 `)
 }
 
 func AddSuiteTemplate() []byte {
 	return []byte(`package {{ .PackageName }}
+
+// Here you can define Setup of testsuite optionally
+func (d *{{ .StructName }}) Setup() (err error) {
+	// implementation
+	return 
+}	
+
+// Here you can define Teardown of testsuite optionally
+func (d *{{ .StructName }}) Teardown() (err error) {
+	// implementation
+	return
+}	
 
 // Here you will define your specific testcase
 func (d *{{ .StructName }}) TestCase1() (err error) {
@@ -59,7 +76,7 @@ import (
 type {{ .StructName }} struct{}
 
 func (d *{{ .StructName }}) Execute() {
-	execute.Execute()
+	execute.Execute(d)
 }
 
 `)
