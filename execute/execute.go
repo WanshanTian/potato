@@ -30,7 +30,7 @@ func GetMethodsImplementedByUser(suite register.TestSuite) (ret []reflect.Method
 }
 
 func IsExistTestcases() {
-	if *TestCasesSpecified == "" {
+	if TestCasesSpecified == nil {
 		return
 	}
 	reg := regexp.MustCompile(`(\w+,?)+`)
@@ -65,7 +65,7 @@ func IsExistTestcases() {
 }
 
 func IsExistTestSuites() {
-	if *TestSuitesSpecified == "" {
+	if TestSuitesSpecified == nil {
 		return
 	}
 	reg := regexp.MustCompile(`(\w+,?)+`)
@@ -94,7 +94,7 @@ func Execute(testsuite interface{}) {
 	funcElements := []reflect.Value{suiteValue}
 	//global variable TestCasesSpecified !=nil
 	var testCasesExec = []reflect.Method{}
-	if *TestCasesSpecified == "" {
+	if TestCasesSpecified == nil {
 		testcases := strings.Split(*TestCasesSpecified, ",")
 		tmp := make(map[string]reflect.Method)
 		for i := 0; i < suiteType.NumMethod(); i++ {
