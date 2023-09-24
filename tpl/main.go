@@ -17,9 +17,9 @@ func ExecuteTemplate() []byte {
 	return []byte(`package execute
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/txy2023/potato/execute"
+	"github.com/txy2023/potato/register"
 )
 
 var rootCmd = &cobra.Command{
