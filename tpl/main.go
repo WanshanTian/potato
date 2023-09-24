@@ -31,6 +31,9 @@ if flag testcase or flag testsuite is not specified, all testcases will be execu
 		if TestCasesSpecified != nil {
 			execute.TestCasesSpecified = TestCasesSpecified
 			execute.IsExistTestcases()
+			for _, testsuite := range execute.TestSuitesExecForTestCasesSpecified {
+				testsuite.Execute()
+			}
 		}
 		if TestSuitesSpecified != nil {
 			execute.TestSuitesSpecified = TestSuitesSpecified
@@ -38,7 +41,8 @@ if flag testcase or flag testsuite is not specified, all testcases will be execu
 			for _, testsuite := range execute.TestSuitesExec {
 				testsuite.Execute()
 			}
-		} else {
+		} 
+		if TestCasesSpecified == nil && TestSuitesSpecified == nil {
 			for _, testsuite := range register.Registered {
 				testsuite.Execute()
 			}

@@ -11,9 +11,10 @@ import (
 )
 
 var (
-	TestCasesSpecified  *string
-	TestSuitesSpecified *string
-	TestSuitesExec      []register.TestSuite
+	TestCasesSpecified                  *string
+	TestSuitesSpecified                 *string
+	TestSuitesExec                      []register.TestSuite
+	TestSuitesExecForTestCasesSpecified []register.TestSuite
 )
 
 func GetMethodsImplementedByUser(suite register.TestSuite) (ret []reflect.Method) {
@@ -38,16 +39,27 @@ func IsExistTestcases() {
 		os.Exit(1)
 	}
 	testcases := strings.Split(*TestCasesSpecified, ",")
-	allcases := map[string]struct{}{}
+	allcases := make(map[string]register.TestSuite)
 	for _, suite := range register.Registered {
 		for _, s := range GetMethodsImplementedByUser(suite) {
-			allcases[strings.ToLower(s.Name)] = struct{}{}
+			allcases[strings.ToLower(s.Name)] = suite
 		}
 	}
 	for _, c := range testcases {
-		if _, ok := allcases[c]; !ok {
+		v, ok := allcases[c]
+		if !ok {
 			log.Printf("testcase: %s is not implemented\n", c)
 			os.Exit(1)
+		} else {
+			flag := 0
+			for _, s := range TestSuitesExecForTestCasesSpecified {
+				if v == s {
+					flag = 1
+				}
+			}
+			if flag == 0 {
+				TestSuitesExecForTestCasesSpecified = append(TestSuitesExecForTestCasesSpecified, v)
+			}
 		}
 	}
 }
