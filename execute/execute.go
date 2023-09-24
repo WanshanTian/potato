@@ -127,11 +127,8 @@ func Execute(testsuite interface{}) {
 		// if the return of Setup !=nil, the testcases will be assumed to be failed
 		if ret[0].Interface() != nil {
 			log.Printf("testsuite %s Setup fail", suiteType.Elem().Name())
-			for i := 0; i < suiteType.NumMethod(); i++ {
-				if suiteType.Method(i).Name == "Execute" || suiteType.Method(i).Name == "Setup" || suiteType.Method(i).Name == "Teardown" {
-					continue
-				}
-				log.Printf("FAIL: %s.%s", suiteType.Elem().Name(), suiteType.Method(i).Name)
+			for _, method := range GetMethodsImplementedByUser(testsuite.(register.TestSuite)) {
+				log.Printf("FAIL: %s.%s", suiteType.Elem().Name(), method.Name)
 			}
 			return
 		}
