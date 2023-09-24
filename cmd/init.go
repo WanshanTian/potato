@@ -37,7 +37,7 @@ var initCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		projectPath, err := initializeProject(args)
 		cobra.CheckErr(err)
-		fmt.Printf("Your Potato Automated Testing Project is ready at\n%s\n", projectPath)
+		fmt.Printf("Your Potato Automated Testing Project is ready at:\n%s\n", projectPath)
 	},
 }
 

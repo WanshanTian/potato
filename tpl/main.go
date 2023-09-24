@@ -28,7 +28,21 @@ var rootCmd = &cobra.Command{
 		`when flag testcase is specified, the testcase specified will be executed, so is flag testsuite
 if flag testcase or flag testsuite is not specified, all testcases will be executed` + "`" + `,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("run")
+		if TestCasesSpecified != nil {
+			execute.TestCasesSpecified = TestCasesSpecified
+			execute.IsExistTestcases()
+		}
+		if TestSuitesSpecified != nil {
+			execute.TestSuitesSpecified = TestSuitesSpecified
+			execute.IsExistTestSuites()
+			for _, testsuite := range execute.TestSuitesExec {
+				testsuite.Execute()
+			}
+		} else {
+			for _, testsuite := range register.Registered {
+				testsuite.Execute()
+			}
+		}
 	},
 }
 
@@ -36,9 +50,14 @@ func Execute() {
 	cobra.CheckErr(rootCmd.Execute())
 }
 
+var (
+	TestCasesSpecified  *string
+	TestSuitesSpecified *string
+)
+
 func init() {
-	rootCmd.Flags().StringP("testcase", "c", "", "specify the testcases to execute(separated by commas), such as(total:):")
-	rootCmd.Flags().StringP("testsuite", "s", "", "specify the testsuites to execute(separated by commas), such as(total:):")
+	TestCasesSpecified = rootCmd.Flags().StringP("testcase", "c", "", "specify the testcases to execute(separated by commas), such as(total:):")
+	TestSuitesSpecified = rootCmd.Flags().StringP("testsuite", "s", "", "specify the testsuites to execute(separated by commas), such as(total:):")
 }
 `)
 }

@@ -28,7 +28,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "potato",
+	Use:   "",
 	Short: "A generator for Potato based Automated Testing Projects",
 	Long: `Potato is a CLI library for Go which generates the needed files
 	to quickly create a Potato Automated Testing Project.`,
