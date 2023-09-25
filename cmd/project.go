@@ -33,7 +33,7 @@ type Testsuite struct {
 }
 
 var (
-	testsuites = "testsuites"
+	TestsuitesDirName = "testsuites"
 )
 
 func (p *Project) Create() error {
@@ -88,22 +88,22 @@ func (c *Testsuite) Create() error {
 		dst               string
 	)
 	// acquire dst
-	if strings.Contains(c.AbsolutePath, "testsuites") {
+	if strings.Contains(c.AbsolutePath, TestsuitesDirName) {
 		dst = path.Join(c.AbsolutePath, c.SuiteName)
 	} else {
-		if _, err := os.Stat(path.Join(c.AbsolutePath, "testsuites")); os.IsNotExist(err) {
+		if _, err := os.Stat(path.Join(c.AbsolutePath, TestsuitesDirName)); os.IsNotExist(err) {
 			fmt.Println(err.Error() + "\nPlease add a testsuite under the rootpath of potato project or the path of testsuites")
 			os.Exit(1)
 		}
-		dst = path.Join(c.AbsolutePath, "testsuites", c.SuiteName)
+		dst = path.Join(c.AbsolutePath, TestsuitesDirName, c.SuiteName)
 	}
-	if !strings.Contains(dst, "testsuites") {
+	if !strings.Contains(dst, TestsuitesDirName) {
 		fmt.Printf("The absolute path is %s, please enter the correct relative path of testsuite", dst)
 		os.Exit(1)
 	}
 	c.Dst = dst
 	// acquire the module name
-	modFile := path.Join(strings.Split(dst, testsuites)[0], "go.mod")
+	modFile := path.Join(strings.Split(dst, TestsuitesDirName)[0], "go.mod")
 	if _, err := os.Stat(modFile); os.IsNotExist(err) {
 		fmt.Println("please go mod init [mod-name] manually first")
 		os.Exit(1)
@@ -113,7 +113,7 @@ func (c *Testsuite) Create() error {
 		return err
 	}
 	c.ModName = modfile.ModulePath(goModBytes)
-	c.ImportedPath = path.Join(c.ModName, testsuites, strings.Split(dst, testsuites)[1])
+	c.ImportedPath = path.Join(c.ModName, TestsuitesDirName, strings.Split(dst, TestsuitesDirName)[1])
 	// create dst directory
 	if _, err := os.Stat(dst); os.IsNotExist(err) {
 		cobra.CheckErr(os.MkdirAll(dst, 0751))
