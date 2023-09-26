@@ -17,6 +17,8 @@ func ExecuteTemplate() []byte {
 	return []byte(`package execute
 
 import (
+	"{{ .ModName }}/comment"
+
 	"github.com/spf13/cobra"
 	"github.com/txy2023/potato/execute"
 	"github.com/txy2023/potato/register"
@@ -61,7 +63,7 @@ var (
 
 func init() {
 	TestCasesSpecified = rootCmd.Flags().StringP("testcase", "c", "", "specify the testcases to execute(separated by commas), such as(total:):")
-	TestSuitesSpecified = rootCmd.Flags().StringP("testsuite", "s", "", "specify the testsuites to execute(separated by commas), such as(total:):")
+	TestSuitesSpecified = rootCmd.Flags().StringP("testsuite", "s", "", "specify the testsuites to execute(separated by commas), such as(total:):\n"+comment.TestSuiteComment)
 }
 `)
 }
@@ -118,4 +120,10 @@ func init() {
 	register.Registe(new({{ .PackageName }}.{{ .StructName }}))
 }
 `)
+}
+
+func TestSuiteCommentTemplate() []byte {
+	return []byte(`package comment
+
+var TestSuiteComment = ` + "`" + `{{ .Testsuite }}` + "`")
 }

@@ -16,38 +16,36 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"log"
-	"os"
 	"path"
-	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/txy2023/potato/utils"
 )
+
+type CommentInfo struct {
+	Testsuite string
+	*Project
+}
+
+var Commentinfomation = new(CommentInfo)
 
 // commentCmd represents the comment command
 var commentCmd = &cobra.Command{
 	Use:  "comment",
 	Long: `Automatically generate the comment of testcases and testsuites.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var dst string
-		wd, err := os.Getwd()
+		dst, err := utils.GetTestSuiteAbsoluteRootDir(TestsuitesDirName)
 		if err != nil {
 			log.Panic(err)
 		}
-		if strings.Contains(wd, TestsuitesDirName) {
-			dst = strings.Split(wd, TestsuitesDirName)[0]
-		} else {
-			if _, err := os.Stat(path.Join(wd, TestsuitesDirName)); os.IsNotExist(err) {
-				fmt.Println(err.Error() + "\nPlease execute comment under the rootpath of potato project or the path of testsuites")
-				os.Exit(1)
-			}
-			dst = path.Join(wd, TestsuitesDirName)
+		com, err := utils.GetAllTestSuitesComment(dst)
+		if err != nil {
+			log.Panic(err)
 		}
-		if !strings.Contains(dst, TestsuitesDirName) {
-			fmt.Printf("The absolute path is %s, please enter the correct relative path of testsuite", dst)
-			os.Exit(1)
-		}
+		prettysuitecom := utils.PrettySuiteComment(com)
+		Commentinfomation.Testsuite = prettysuitecom
+		utils.CommentWrite(Commentinfomation, path.Dir(dst))
 	},
 }
 

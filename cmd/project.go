@@ -77,7 +77,18 @@ func (p *Project) Create() error {
 		cobra.CheckErr(os.Mkdir(fmt.Sprintf("%s/testsuites", p.AbsolutePath), 0751))
 	}
 
-	return nil
+	// create comment/
+	if _, err := os.Stat(path.Join(p.AbsolutePath, "comment")); os.IsNotExist(err) {
+		os.MkdirAll(path.Join(p.AbsolutePath, "comment"), 0644)
+	}
+	testsuiteCommnetFile, err := os.OpenFile(path.Join(p.AbsolutePath, "comment", "testSuiteCommentFile.go"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+	defer testsuiteCommnetFile.Close()
+	testsuiteCommentTemplate := template.Must(template.New("testsuiteComment").Parse(string(tpl.TestSuiteCommentTemplate())))
+	err = testsuiteCommentTemplate.Execute(testsuiteCommnetFile, Commentinfomation)
+	return err
 }
 
 func (c *Testsuite) Create() error {

@@ -7,6 +7,7 @@ import (
 	"github.com/txy2023/potato/utils"
 )
 
+// hellotest
 type Hello2Suite struct{}
 
 func (d *Hello2Suite) Execute() {
@@ -25,5 +26,6 @@ func (d *Hello2Suite) Teardown(a int) error {
 	return nil
 }
 func main() {
-	fmt.Println(utils.GetTestSuiteName(&Hello2Suite{}))
+	// fmt.Println(utils.GetTestSuiteName(&Hello2Suite{}))
+	fmt.Println(utils.GetAllTestSuitesComment("../"))
 }
