@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/txy2023/potato/execute"
 	"github.com/txy2023/potato/utils"
@@ -27,5 +28,6 @@ func (d *Hello2Suite) Teardown(a int) error {
 }
 func main() {
 	// fmt.Println(utils.GetTestSuiteName(&Hello2Suite{}))
-	fmt.Println(utils.GetAllTestSuitesComment("../"))
+	// fmt.Println(utils.GetAllTestSuitesComment("../"))
+	fmt.Println(utils.GetMethodsImplementedByUser(reflect.TypeOf(&Hello2Suite{})))
 }

@@ -127,3 +127,9 @@ func TestSuiteCommentTemplate() []byte {
 
 var TestSuiteComment = ` + "`" + `{{ .Testsuite }}` + "`")
 }
+
+func TestCaseCommentTemplate() []byte {
+	return []byte(`package comment
+
+	var TestCaseComment = ` + "`" + `{{ .Testcase }}` + "`")
+}

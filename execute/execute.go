@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/txy2023/potato/register"
+	"github.com/txy2023/potato/utils"
 )
 
 var (
@@ -17,17 +18,17 @@ var (
 	TestSuitesExecForTestCasesSpecified []register.TestSuite
 )
 
-func GetMethodsImplementedByUser(suite register.TestSuite) (ret []reflect.Method) {
-	suiteType := reflect.TypeOf(suite)
-	for i := 0; i < suiteType.NumMethod(); i++ {
-		if suiteType.Method(i).Name == "Execute" || suiteType.Method(i).Name == "Setup" || suiteType.Method(i).Name == "Teardown" {
-			continue
-		}
-		method := suiteType.Method(i)
-		ret = append(ret, method)
-	}
-	return
-}
+// func GetMethodsImplementedByUser(suite register.TestSuite) (ret []reflect.Method) {
+// 	suiteType := reflect.TypeOf(suite)
+// 	for i := 0; i < suiteType.NumMethod(); i++ {
+// 		if suiteType.Method(i).Name == "Execute" || suiteType.Method(i).Name == "Setup" || suiteType.Method(i).Name == "Teardown" {
+// 			continue
+// 		}
+// 		method := suiteType.Method(i)
+// 		ret = append(ret, method)
+// 	}
+// 	return
+// }
 
 func IsExistTestcases() {
 	if TestCasesSpecified == nil {
@@ -41,7 +42,7 @@ func IsExistTestcases() {
 	testcases := strings.Split(*TestCasesSpecified, ",")
 	allcases := make(map[string]register.TestSuite)
 	for _, suite := range register.Registered {
-		for _, s := range GetMethodsImplementedByUser(suite) {
+		for _, s := range utils.GetMethodsImplementedByUser(suite) {
 			allcases[strings.ToLower(s.Name)] = suite
 		}
 	}
@@ -127,7 +128,7 @@ func Execute(testsuite interface{}) {
 		// if the return of Setup !=nil, the testcases will be assumed to be failed
 		if ret[0].Interface() != nil {
 			log.Printf("testsuite %s Setup fail", suiteType.Elem().Name())
-			for _, method := range GetMethodsImplementedByUser(testsuite.(register.TestSuite)) {
+			for _, method := range utils.GetMethodsImplementedByUser(testsuite.(register.TestSuite)) {
 				log.Printf("FAIL: %s.%s", suiteType.Elem().Name(), method.Name)
 			}
 			return
@@ -135,7 +136,7 @@ func Execute(testsuite interface{}) {
 	}
 	// testcase
 	if len(testCasesExec) == 0 {
-		testCasesExec = GetMethodsImplementedByUser(testsuite.(register.TestSuite))
+		testCasesExec = utils.GetMethodsImplementedByUser(testsuite.(register.TestSuite))
 	}
 	for _, method := range testCasesExec {
 		if method.Type.NumIn() > 1 {

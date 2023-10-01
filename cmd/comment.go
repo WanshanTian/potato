@@ -25,6 +25,7 @@ import (
 
 type CommentInfo struct {
 	Testsuite string
+	Testcase  string
 	*Project
 }
 
@@ -39,12 +40,21 @@ var commentCmd = &cobra.Command{
 		if err != nil {
 			log.Panic(err)
 		}
+		// testsuite
 		com, err := utils.GetAllTestSuitesComment(dst)
 		if err != nil {
 			log.Panic(err)
 		}
 		prettysuitecom := utils.PrettySuiteComment(com)
+		// testcase
+		comCase, err := utils.GetAllTestCasesComment(dst)
+		if err != nil {
+			log.Panic(err)
+		}
+		prettycasecom := utils.PrettyCaseComment(comCase)
+		// write
 		Commentinfomation.Testsuite = prettysuitecom
+		Commentinfomation.Testcase = prettycasecom
 		utils.CommentWrite(Commentinfomation, path.Dir(dst))
 	},
 }
