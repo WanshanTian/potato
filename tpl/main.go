@@ -125,11 +125,15 @@ func init() {
 func TestSuiteCommentTemplate() []byte {
 	return []byte(`package comment
 
+var TestSuiteCount = {{ .TestsuiteCount }}
+
 var TestSuiteComment = ` + "`" + `{{ .Testsuite }}` + "`")
 }
 
 func TestCaseCommentTemplate() []byte {
 	return []byte(`package comment
+
+var TestCaseCount = {{ .TestcaseCount }}	
 
 var TestCaseComment = ` + "`" + `{{ .Testcase }}` + "`")
 }

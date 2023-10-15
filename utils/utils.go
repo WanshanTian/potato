@@ -79,6 +79,7 @@ func getAllTestSuitesPath(testSuiteAbsoluteRootDir string) (ret []string) {
 	return getAlldirs(testSuiteAbsoluteRootDir)
 }
 
+// format: map[Hello2Suite:description ...]
 func GetAllTestSuitesComment(testSuiteAbsoluteRootDir string) (ret map[string]string, err error) {
 	dirs := getAllTestSuitesPath(testSuiteAbsoluteRootDir)
 	fset := token.NewFileSet()
@@ -98,6 +99,11 @@ func GetAllTestSuitesComment(testSuiteAbsoluteRootDir string) (ret map[string]st
 	return
 }
 
+func GetTestSuitesNum(m map[string]string) int {
+	return len(m)
+}
+
+// format: map[Hello2Suite:map[Walk:description] ...]
 func GetAllTestCasesComment(testSuiteAbsoluteRootDir string) (ret map[string]map[string]string, err error) {
 	dirs := getAllTestSuitesPath(testSuiteAbsoluteRootDir)
 	fset := token.NewFileSet()
@@ -119,6 +125,15 @@ func GetAllTestCasesComment(testSuiteAbsoluteRootDir string) (ret map[string]map
 				}
 				ret[t.Name] = tmp
 			}
+		}
+	}
+	return
+}
+
+func GetTestCasesNum(m map[string]map[string]string) (ret int) {
+	for _, v := range m {
+		for range v {
+			ret++
 		}
 	}
 	return

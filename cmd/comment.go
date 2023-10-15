@@ -25,8 +25,10 @@ import (
 )
 
 type CommentInfo struct {
-	Testsuite string
-	Testcase  string
+	Testsuite      string
+	TestsuiteCount int
+	Testcase       string
+	TestcaseCount  int
 	*Project
 }
 
@@ -46,16 +48,20 @@ var commentCmd = &cobra.Command{
 		if err != nil {
 			log.Panic(err)
 		}
+		testsuiteNum := utils.GetTestSuitesNum(com)
 		prettysuitecom := utils.PrettySuiteComment(com)
 		// testcase
 		comCase, err := utils.GetAllTestCasesComment(dst)
 		if err != nil {
 			log.Panic(err)
 		}
+		testcaseeNum := utils.GetTestCasesNum(comCase)
 		prettycasecom := utils.PrettyCaseComment(comCase)
 		// write
 		Commentinfomation.Testsuite = prettysuitecom
+		Commentinfomation.TestsuiteCount = testsuiteNum
 		Commentinfomation.Testcase = prettycasecom
+		Commentinfomation.TestcaseCount = testcaseeNum
 		utils.CommentWrite(Commentinfomation, path.Dir(dst), string(tpl.TestSuiteCommentTemplate()), string(tpl.TestCaseCommentTemplate()))
 	},
 }
