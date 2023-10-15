@@ -95,7 +95,7 @@ func Execute(testsuite interface{}) {
 	funcElements := []reflect.Value{suiteValue}
 	//global variable TestCasesSpecified !=nil
 	var testCasesExec = []reflect.Method{}
-	if TestCasesSpecified == nil {
+	if TestCasesSpecified != nil {
 		testcases := strings.Split(*TestCasesSpecified, ",")
 		tmp := make(map[string]reflect.Method)
 		for i := 0; i < suiteType.NumMethod(); i++ {
