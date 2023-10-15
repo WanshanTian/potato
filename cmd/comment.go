@@ -20,6 +20,7 @@ import (
 	"path"
 
 	"github.com/spf13/cobra"
+	"github.com/txy2023/potato/tpl"
 	"github.com/txy2023/potato/utils"
 )
 
@@ -55,7 +56,7 @@ var commentCmd = &cobra.Command{
 		// write
 		Commentinfomation.Testsuite = prettysuitecom
 		Commentinfomation.Testcase = prettycasecom
-		utils.CommentWrite(Commentinfomation, path.Dir(dst))
+		utils.CommentWrite(Commentinfomation, path.Dir(dst), string(tpl.TestSuiteCommentTemplate()), string(tpl.TestCaseCommentTemplate()))
 	},
 }
 

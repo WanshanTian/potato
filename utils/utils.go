@@ -13,8 +13,6 @@ import (
 	"path"
 	"reflect"
 	"strings"
-
-	"github.com/txy2023/potato/tpl"
 )
 
 func GetTestSuiteName(suite interface{}) (name string) {
@@ -175,14 +173,14 @@ func PrettyCaseComment(m map[string]map[string]string) string {
 }
 
 // persistence
-func CommentWrite(m interface{}, dst string) {
+func CommentWrite(m interface{}, dst string, testsuiteText string, testcaseText string) {
 	// testsuites
 	testsuiteCommnetFile, err := os.OpenFile(path.Join(dst, "comment", "testSuiteCommentFile.go"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
 		log.Panic(err)
 	}
 	defer testsuiteCommnetFile.Close()
-	testsuiteCommentTemplate := template.Must(template.New("testsuiteComment").Parse(string(tpl.TestSuiteCommentTemplate())))
+	testsuiteCommentTemplate := template.Must(template.New("testsuiteComment").Parse(testsuiteText))
 	err = testsuiteCommentTemplate.Execute(testsuiteCommnetFile, m)
 	if err != nil {
 		log.Panic(err)
@@ -193,7 +191,7 @@ func CommentWrite(m interface{}, dst string) {
 		log.Panic(err)
 	}
 	defer testcaseCommnetFile.Close()
-	testcaseCommentTemplate := template.Must(template.New("testcaseComment").Parse(string(tpl.TestCaseCommentTemplate())))
+	testcaseCommentTemplate := template.Must(template.New("testcaseComment").Parse(testcaseText))
 	err = testcaseCommentTemplate.Execute(testcaseCommnetFile, m)
 	if err != nil {
 		log.Panic(err)
