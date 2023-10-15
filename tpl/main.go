@@ -62,8 +62,8 @@ var (
 )
 
 func init() {
-	TestCasesSpecified = rootCmd.Flags().StringP("testcase", "c", "", "specify the testcases to execute(separated by commas), such as(total:):\n"+comment.TestCaseComment)
-	TestSuitesSpecified = rootCmd.Flags().StringP("testsuite", "s", "", "specify the testsuites to execute(separated by commas), such as(total:):\n"+comment.TestSuiteComment)
+	TestCasesSpecified = rootCmd.Flags().StringP("testcase", "c", "", "specify the testcases to execute(separated by commas), such as(total: "+comment.TestCaseCount"):\n"+comment.TestCaseComment)
+	TestSuitesSpecified = rootCmd.Flags().StringP("testsuite", "s", "", "specify the testsuites to execute(separated by commas), such as(total: "+comment.TestSuiteComment"):\n"+comment.TestSuiteComment)
 }
 `)
 }
