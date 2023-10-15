@@ -12,7 +12,6 @@ import (
 	"os"
 	"path"
 	"reflect"
-	"strconv"
 	"strings"
 )
 
@@ -100,8 +99,8 @@ func GetAllTestSuitesComment(testSuiteAbsoluteRootDir string) (ret map[string]st
 	return
 }
 
-func GetTestSuitesNum(m map[string]string) string {
-	return strconv.Itoa(len(m))
+func GetTestSuitesNum(m map[string]string) int {
+	return len(m)
 }
 
 // format: map[Hello2Suite:map[Walk:description] ...]
@@ -131,14 +130,13 @@ func GetAllTestCasesComment(testSuiteAbsoluteRootDir string) (ret map[string]map
 	return
 }
 
-func GetTestCasesNum(m map[string]map[string]string) string {
-	var ret int
+func GetTestCasesNum(m map[string]map[string]string) (ret int) {
 	for _, v := range m {
 		for range v {
 			ret++
 		}
 	}
-	return strconv.Itoa(ret)
+	return
 }
 
 // formatted output
