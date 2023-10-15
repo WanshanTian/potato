@@ -26,9 +26,9 @@ import (
 
 type CommentInfo struct {
 	Testsuite      string
-	TestsuiteCount int
+	TestsuiteCount string
 	Testcase       string
-	TestcaseCount  int
+	TestcaseCount  string
 	*Project
 }
 
