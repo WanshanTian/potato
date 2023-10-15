@@ -62,7 +62,7 @@ var (
 )
 
 func init() {
-	TestCasesSpecified = rootCmd.Flags().StringP("testcase", "c", "", "specify the testcases to execute(separated by commas), such as(total:):")
+	TestCasesSpecified = rootCmd.Flags().StringP("testcase", "c", "", "specify the testcases to execute(separated by commas), such as(total:):\n"+comment.TestCaseComment)
 	TestSuitesSpecified = rootCmd.Flags().StringP("testsuite", "s", "", "specify the testsuites to execute(separated by commas), such as(total:):\n"+comment.TestSuiteComment)
 }
 `)
@@ -131,5 +131,5 @@ var TestSuiteComment = ` + "`" + `{{ .Testsuite }}` + "`")
 func TestCaseCommentTemplate() []byte {
 	return []byte(`package comment
 
-	var TestCaseComment = ` + "`" + `{{ .Testcase }}` + "`")
+var TestCaseComment = ` + "`" + `{{ .Testcase }}` + "`")
 }

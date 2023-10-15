@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"strings"
@@ -81,6 +82,7 @@ func (p *Project) Create() error {
 	if _, err := os.Stat(path.Join(p.AbsolutePath, "comment")); os.IsNotExist(err) {
 		os.MkdirAll(path.Join(p.AbsolutePath, "comment"), 0644)
 	}
+	// create comment/testSuiteCommentFile.go
 	testsuiteCommnetFile, err := os.OpenFile(path.Join(p.AbsolutePath, "comment", "testSuiteCommentFile.go"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
 		return err
@@ -88,6 +90,20 @@ func (p *Project) Create() error {
 	defer testsuiteCommnetFile.Close()
 	testsuiteCommentTemplate := template.Must(template.New("testsuiteComment").Parse(string(tpl.TestSuiteCommentTemplate())))
 	err = testsuiteCommentTemplate.Execute(testsuiteCommnetFile, Commentinfomation)
+	if err != nil {
+		return err
+	}
+	// create comment/testCaseCommentFile.go
+	testcaseCommnetFile, err := os.OpenFile(path.Join(p.AbsolutePath, "comment", "testCaseCommentFile.go"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0644)
+	if err != nil {
+		log.Panic(err)
+	}
+	defer testcaseCommnetFile.Close()
+	testcaseCommentTemplate := template.Must(template.New("testcaseComment").Parse(string(tpl.TestCaseCommentTemplate())))
+	err = testcaseCommentTemplate.Execute(testcaseCommnetFile, Commentinfomation)
+	if err != nil {
+		log.Panic(err)
+	}
 	return err
 }
 
