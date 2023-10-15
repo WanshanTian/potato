@@ -151,13 +151,14 @@ func Execute(testsuite interface{}) {
 			log.Printf("FAIL: %s.%s(the typeOut of %s should be error)", suiteType.Elem().Name(), method.Name, method.Name)
 			continue
 		}
-		log.Printf("\nExecuting: %s.%s", suiteType.Elem().Name(), method.Name)
+		log.Printf("Executing: %s.%s", suiteType.Elem().Name(), method.Name)
 		ret := method.Func.Call(funcElements)
 		if ret[0].Interface() == nil {
 			log.Printf("PASS: %s.%s", suiteType.Elem().Name(), method.Name)
 		} else {
 			log.Printf("FAIL: %s.%s", suiteType.Elem().Name(), method.Name)
 		}
+		log.Printf("\n")
 	}
 	// teardown
 	if method, ok := suiteType.MethodByName("Teardown"); ok {
