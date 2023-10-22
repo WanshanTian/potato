@@ -1,11 +1,13 @@
 package execute
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"reflect"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/txy2023/potato/register"
 	"github.com/txy2023/potato/utils"
@@ -152,13 +154,15 @@ func Execute(testsuite interface{}) {
 			continue
 		}
 		log.Printf("Executing: %s.%s", suiteType.Elem().Name(), method.Name)
+		timeStat := time.Now()
 		ret := method.Func.Call(funcElements)
+		timeElapse := time.Since(timeStat)
 		if ret[0].Interface() == nil {
-			log.Printf("PASS: %s.%s", suiteType.Elem().Name(), method.Name)
+			log.Printf("PASS:      %s.%s(%s)", suiteType.Elem().Name(), method.Name, timeElapse)
 		} else {
-			log.Printf("FAIL: %s.%s", suiteType.Elem().Name(), method.Name)
+			log.Printf("FAIL:      %s.%s(%s), ErrMsg: %s", suiteType.Elem().Name(), method.Name, timeElapse, ret[0].Interface())
 		}
-		log.Printf("\n")
+		fmt.Printf("\n")
 	}
 	// teardown
 	if method, ok := suiteType.MethodByName("Teardown"); ok {

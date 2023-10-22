@@ -36,8 +36,8 @@ var Commentinfomation = new(CommentInfo)
 
 // commentCmd represents the comment command
 var commentCmd = &cobra.Command{
-	Use:  "comment",
-	Long: `Automatically generate the comment of testcases and testsuites.`,
+	Use:  "update",
+	Long: `Automatically update the comment of testcases and testsuites.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		dst, err := utils.GetTestSuiteAbsoluteRootDir(TestsuitesDirName)
 		if err != nil {
