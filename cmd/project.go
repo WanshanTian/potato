@@ -80,7 +80,7 @@ func (p *Project) Create() error {
 
 	// create comment/
 	if _, err := os.Stat(path.Join(p.AbsolutePath, "comment")); os.IsNotExist(err) {
-		os.MkdirAll(path.Join(p.AbsolutePath, "comment"), 0644)
+		os.MkdirAll(path.Join(p.AbsolutePath, "comment"), 0751)
 	}
 	// create comment/testSuiteCommentFile.go
 	testsuiteCommnetFile, err := os.OpenFile(path.Join(p.AbsolutePath, "comment", "testSuiteCommentFile.go"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0644)

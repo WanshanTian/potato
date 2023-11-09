@@ -20,18 +20,6 @@ var (
 	TestSuitesExecForTestCasesSpecified []register.TestSuite
 )
 
-// func GetMethodsImplementedByUser(suite register.TestSuite) (ret []reflect.Method) {
-// 	suiteType := reflect.TypeOf(suite)
-// 	for i := 0; i < suiteType.NumMethod(); i++ {
-// 		if suiteType.Method(i).Name == "Execute" || suiteType.Method(i).Name == "Setup" || suiteType.Method(i).Name == "Teardown" {
-// 			continue
-// 		}
-// 		method := suiteType.Method(i)
-// 		ret = append(ret, method)
-// 	}
-// 	return
-// }
-
 func IsExistTestcases() {
 	if TestCasesSpecified == nil {
 		return
@@ -112,6 +100,7 @@ func Execute(testsuite interface{}) {
 			return
 		}
 	}
+	log.Println(strings.Repeat("*", len(fmt.Sprintf("Setup of testsuite: %s is being executing", suiteType.Elem().Name()))))
 	// setup
 	if method, ok := suiteType.MethodByName("Setup"); ok {
 		if method.Type.NumIn() > 1 {
@@ -126,14 +115,18 @@ func Execute(testsuite interface{}) {
 			log.Printf("testsuite %s Setup fail (the typeOut of %s should be error)", suiteType.Elem().Name(), method.Name)
 			return
 		}
+		log.Printf("Setup of testsuite: %s is being executing", suiteType.Elem().Name())
 		ret := method.Func.Call(funcElements)
 		// if the return of Setup !=nil, the testcases will be assumed to be failed
 		if ret[0].Interface() != nil {
-			log.Printf("testsuite %s Setup fail", suiteType.Elem().Name())
+			log.Printf("  FAIL\n")
 			for _, method := range utils.GetMethodsImplementedByUser(testsuite.(register.TestSuite)) {
-				log.Printf("FAIL: %s.%s", suiteType.Elem().Name(), method.Name)
+				log.Printf("Testcase: %s.%s is skipped", suiteType.Elem().Name(), method.Name)
+				log.Printf("  FAIL, Error_Msg: %s", "Setup FAIL")
 			}
 			return
+		} else {
+			log.Printf("  DOWN")
 		}
 	}
 	// testcase
@@ -142,25 +135,25 @@ func Execute(testsuite interface{}) {
 	}
 	for _, method := range testCasesExec {
 		if method.Type.NumIn() > 1 {
-			log.Printf("FAIL: %s.%s(the numIn of %s should be equal 1)", suiteType.Elem().Name(), method.Name, method.Name)
+			log.Printf("  FAIL, Error_Msg: the numIn of %s should be equal 1", method.Name)
 			continue
 		}
 		if method.Type.NumOut() > 1 {
-			log.Printf("FAIL: %s.%s(the numOut of %s should be equal 1)", suiteType.Elem().Name(), method.Name, method.Name)
+			log.Printf("  FAIL, Error_Msg: the numOut of %s should be equal 1)", method.Name)
 			continue
 		}
 		if method.Type.Out(0).String() != "error" {
-			log.Printf("FAIL: %s.%s(the typeOut of %s should be error)", suiteType.Elem().Name(), method.Name, method.Name)
+			log.Printf("  FAIL, Error_Msg: the typeOut of %s should be error)", method.Name)
 			continue
 		}
-		log.Printf("Executing: %s.%s", suiteType.Elem().Name(), method.Name)
+		log.Printf("%s.%s is being testing", suiteType.Elem().Name(), method.Name)
 		timeStat := time.Now()
 		ret := method.Func.Call(funcElements)
 		timeElapse := time.Since(timeStat)
 		if ret[0].Interface() == nil {
-			log.Printf("PASS:      %s.%s(%s)", suiteType.Elem().Name(), method.Name, timeElapse)
+			log.Printf("  PASS(%s)", timeElapse)
 		} else {
-			log.Printf("FAIL:      %s.%s(%s), ErrMsg: %s", suiteType.Elem().Name(), method.Name, timeElapse, ret[0].Interface())
+			log.Printf("  FAIL(%s), ErrMsg: %s", timeElapse, ret[0].Interface())
 		}
 		fmt.Printf("\n")
 	}
@@ -178,10 +171,13 @@ func Execute(testsuite interface{}) {
 			log.Printf("testsuite %s Teardown fail (the typeOut of %s should be error)", suiteType.Elem().Name(), method.Name)
 			return
 		}
+		log.Printf("Teardown of testsuite: %s is being executing", suiteType.Elem().Name())
 		ret := method.Func.Call(funcElements)
 		if ret[0].Interface() != nil {
-			log.Printf("testsuite %s Teardown fail", suiteType.Elem().Name())
+			log.Printf("  FAIL")
 			return
+		} else {
+			log.Printf("  DOWN")
 		}
 	}
 }
