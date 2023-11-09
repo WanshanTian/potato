@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/txy2023/potato/execute"
 )
 
@@ -16,12 +14,16 @@ func (d *Hello2Suite) Walk() error {
 	// fmt.Println("hello walk")
 	return nil
 }
+func (d *Hello2Suite) Walk2() error {
+	// fmt.Println("hello walk")
+	return nil
+}
 func (d *Hello2Suite) Setup() error {
-	fmt.Println("begin")
+	// fmt.Println("begin")
 	return nil
 }
 func (d *Hello2Suite) Teardown() error {
-	fmt.Println("end")
+	// fmt.Println("end")
 	return nil
 }
 func main() {

@@ -119,14 +119,16 @@ func Execute(testsuite interface{}) {
 		ret := method.Func.Call(funcElements)
 		// if the return of Setup !=nil, the testcases will be assumed to be failed
 		if ret[0].Interface() != nil {
-			log.Printf("  FAIL\n")
+			log.Printf("  FAIL, ErrMsg: %s", ret[0].Interface())
 			for _, method := range utils.GetMethodsImplementedByUser(testsuite.(register.TestSuite)) {
 				log.Printf("Testcase: %s.%s is skipped", suiteType.Elem().Name(), method.Name)
-				log.Printf("  FAIL, Error_Msg: %s", "Setup FAIL")
+				log.Printf("  FAIL, ErrMsg: %s", "Setup FAIL")
+				log.Println()
 			}
 			return
 		} else {
 			log.Printf("  DOWN")
+			log.Println()
 		}
 	}
 	// testcase
@@ -135,15 +137,15 @@ func Execute(testsuite interface{}) {
 	}
 	for _, method := range testCasesExec {
 		if method.Type.NumIn() > 1 {
-			log.Printf("  FAIL, Error_Msg: the numIn of %s should be equal 1", method.Name)
+			log.Printf("  FAIL, ErrMsg: the numIn of %s should be equal 1", method.Name)
 			continue
 		}
 		if method.Type.NumOut() > 1 {
-			log.Printf("  FAIL, Error_Msg: the numOut of %s should be equal 1)", method.Name)
+			log.Printf("  FAIL, ErrMsg: the numOut of %s should be equal 1)", method.Name)
 			continue
 		}
 		if method.Type.Out(0).String() != "error" {
-			log.Printf("  FAIL, Error_Msg: the typeOut of %s should be error)", method.Name)
+			log.Printf("  FAIL, ErrMsg: the typeOut of %s should be error)", method.Name)
 			continue
 		}
 		log.Printf("%s.%s is being testing", suiteType.Elem().Name(), method.Name)
@@ -155,7 +157,7 @@ func Execute(testsuite interface{}) {
 		} else {
 			log.Printf("  FAIL(%s), ErrMsg: %s", timeElapse, ret[0].Interface())
 		}
-		fmt.Printf("\n")
+		log.Println()
 	}
 	// teardown
 	if method, ok := suiteType.MethodByName("Teardown"); ok {
@@ -174,10 +176,12 @@ func Execute(testsuite interface{}) {
 		log.Printf("Teardown of testsuite: %s is being executing", suiteType.Elem().Name())
 		ret := method.Func.Call(funcElements)
 		if ret[0].Interface() != nil {
-			log.Printf("  FAIL")
+			log.Printf("  FAIL, ErrMsg: %s", ret[0].Interface())
+			log.Println()
 			return
 		} else {
 			log.Printf("  DOWN")
+			log.Println()
 		}
 	}
 }
