@@ -123,12 +123,12 @@ func Execute(testsuite interface{}) {
 			for _, method := range utils.GetMethodsImplementedByUser(testsuite.(register.TestSuite)) {
 				log.Printf("Testcase: %s.%s is skipped", suiteType.Elem().Name(), method.Name)
 				log.Printf("  FAIL, ErrMsg: %s", "Setup FAIL")
-				log.Println()
+				fmt.Println()
 			}
 			return
 		} else {
 			log.Printf("  DOWN")
-			log.Println()
+			fmt.Println()
 		}
 	}
 	// testcase
@@ -157,7 +157,7 @@ func Execute(testsuite interface{}) {
 		} else {
 			log.Printf("  FAIL(%s), ErrMsg: %s", timeElapse, ret[0].Interface())
 		}
-		log.Println()
+		fmt.Println()
 	}
 	// teardown
 	if method, ok := suiteType.MethodByName("Teardown"); ok {
@@ -177,11 +177,11 @@ func Execute(testsuite interface{}) {
 		ret := method.Func.Call(funcElements)
 		if ret[0].Interface() != nil {
 			log.Printf("  FAIL, ErrMsg: %s", ret[0].Interface())
-			log.Println()
+			fmt.Println()
 			return
 		} else {
 			log.Printf("  DOWN")
-			log.Println()
+			fmt.Println()
 		}
 	}
 }
