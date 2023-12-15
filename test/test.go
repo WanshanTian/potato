@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/txy2023/potato/execute"
 )
 
@@ -24,7 +26,7 @@ func (d *Hello2Suite) Setup() error {
 }
 func (d *Hello2Suite) Teardown() error {
 	// fmt.Println("end")
-	return nil
+	return fmt.Errorf("12")
 }
 func main() {
 	// fmt.Println(utils.GetTestSuiteName(&Hello2Suite{}))

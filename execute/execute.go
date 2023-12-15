@@ -14,22 +14,22 @@ import (
 )
 
 var (
-	TestCasesSpecified                  *string
-	TestSuitesSpecified                 *string
+	testCasesSpecified                  *string
+	testSuitesSpecified                 *string
 	TestSuitesExec                      []register.TestSuite
 	TestSuitesExecForTestCasesSpecified []register.TestSuite
 )
 
 func IsExistTestcases() {
-	if TestCasesSpecified == nil {
+	if testCasesSpecified == nil {
 		return
 	}
 	reg := regexp.MustCompile(`(\w+,?)+`)
-	if !reg.MatchString(*TestCasesSpecified) {
+	if !reg.MatchString(*testCasesSpecified) {
 		log.Printf("testcases should be seperated by comma")
 		os.Exit(1)
 	}
-	testcases := strings.Split(*TestCasesSpecified, ",")
+	testcases := strings.Split(*testCasesSpecified, ",")
 	allcases := make(map[string]register.TestSuite)
 	for _, suite := range register.Registered {
 		for _, s := range utils.GetMethodsImplementedByUser(suite) {
@@ -56,15 +56,15 @@ func IsExistTestcases() {
 }
 
 func IsExistTestSuites() {
-	if TestSuitesSpecified == nil {
+	if testSuitesSpecified == nil {
 		return
 	}
 	reg := regexp.MustCompile(`(\w+,?)+`)
-	if !reg.MatchString(*TestSuitesSpecified) {
+	if !reg.MatchString(*testSuitesSpecified) {
 		log.Printf("testsuites should be seperated by comma")
 		os.Exit(1)
 	}
-	testSuitesSpecifiedSlice := strings.Split(*TestSuitesSpecified, ",")
+	testSuitesSpecifiedSlice := strings.Split(*testSuitesSpecified, ",")
 	tmp := make(map[string]register.TestSuite)
 	for _, testSuiteRegister := range register.Registered {
 		tmp[strings.ToLower(reflect.TypeOf(testSuiteRegister).Elem().Name())] = testSuiteRegister
@@ -83,10 +83,10 @@ func Execute(testsuite interface{}) {
 	suiteType := reflect.TypeOf(testsuite)
 	suiteValue := reflect.ValueOf(testsuite)
 	funcElements := []reflect.Value{suiteValue}
-	//global variable TestCasesSpecified !=nil
+	//global variable testCasesSpecified !=nil
 	var testCasesExec = []reflect.Method{}
-	if TestCasesSpecified != nil {
-		testcases := strings.Split(*TestCasesSpecified, ",")
+	if testCasesSpecified != nil {
+		testcases := strings.Split(*testCasesSpecified, ",")
 		tmp := make(map[string]reflect.Method)
 		for i := 0; i < suiteType.NumMethod(); i++ {
 			tmp[strings.ToLower(suiteType.Method(i).Name)] = suiteType.Method(i)
@@ -182,6 +182,29 @@ func Execute(testsuite interface{}) {
 		} else {
 			log.Printf("  DOWN")
 			log.Println()
+		}
+	}
+}
+
+func Run(tc, ts *string) {
+	if *tc != "" {
+		testCasesSpecified = tc
+		IsExistTestcases()
+		for _, testsuite := range TestSuitesExecForTestCasesSpecified {
+			testsuite.Execute()
+		}
+		testCasesSpecified = nil
+	}
+	if *ts != "" {
+		testSuitesSpecified = ts
+		IsExistTestSuites()
+		for _, testsuite := range TestSuitesExec {
+			testsuite.Execute()
+		}
+	}
+	if *tc == "" && *ts == "" {
+		for _, testsuite := range register.Registered {
+			testsuite.Execute()
 		}
 	}
 }
