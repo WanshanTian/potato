@@ -31,8 +31,8 @@ var rootCmd = &cobra.Command{
 		`when flag testcase is specified, the testcase specified will be executed, so is flag testsuite
 if flag testcase or flag testsuite is not specified, all testcases will be executed` + "`" + `,
 	Run: func(cmd *cobra.Command, args []string) {
-		execute.Run(TestCasesSpecified, TestSuitesSpecified),
-	}
+		execute.Run(TestCasesSpecified, TestSuitesSpecified)
+	},
 }
 
 func Execute() {
